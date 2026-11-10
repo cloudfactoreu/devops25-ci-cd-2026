@@ -35,7 +35,7 @@ jobs:
       - name: Run Ruff
         run: ruff check app tests
 
-          docker-build:
+  docker-build:
     name: Build Docker Image
     needs: test-and-lint
     runs-on: ubuntu-latest
