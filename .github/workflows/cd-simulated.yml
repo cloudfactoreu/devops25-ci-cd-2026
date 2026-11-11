@@ -1,6 +1,11 @@
 name: CD - Simulated Deployment
 
 on:
+  push:
+    branches:
+      - demo/dag5
+
+
   workflow_dispatch:
 
 jobs:
