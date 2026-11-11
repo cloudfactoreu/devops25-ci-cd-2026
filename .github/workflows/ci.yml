@@ -18,7 +18,7 @@ jobs:
     steps:
       # STEG 1: Hämta koden
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # STEG 2: Installera Python
       - name: Set up Python
