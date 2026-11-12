@@ -32,19 +32,28 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      # STEG 4: Kör automatiska tester
+      # STEG 4: Kör automatiska tester och skapa testrapport
       - name: Run tests
-        run: python -m pytest -v
+        run: python -m pytest -v --junitxml=test-results.xml
 
-      # STEG 5: Kontrollera kodkvalitet
+      # STEG 5: Spara testresultatet som Artifact
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xml
+          if-no-files-found: warn
+
+      # STEG 6: Kontrollera kodkvalitet
       - name: Run Ruff
         run: ruff check app tests
 
-      # STEG 6: Bygg Dockerimage
+      # STEG 7: Bygg Dockerimage
       - name: Build Docker image
         run: docker build -t devops25-cicd-demo:ci .
 
-      # STEG 7: Starta Dockercontainer
+      # STEG 8: Starta Dockercontainer
       - name: Start Docker container
         run: |
           docker run -d \
@@ -52,7 +61,7 @@ jobs:
             -p 8000:8000 \
             devops25-cicd-demo:ci
 
-      # STEG 8: Verifiera applikationen
+      # STEG 9: Verifiera applikationen
       - name: Verify application
         run: |
           for i in {1..10}; do
@@ -67,7 +76,7 @@ jobs:
           docker logs devops-demo
           exit 1
 
-      # STEG 9: Stoppa och ta bort containern
+      # STEG 10: Stoppa och ta bort containern
       - name: Stop container
         if: always()
         run: docker rm -f devops-demo || true
