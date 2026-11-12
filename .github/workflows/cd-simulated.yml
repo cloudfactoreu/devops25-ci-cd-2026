@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - demo/dag5
+      - demo/dag6
 
 
   workflow_dispatch:
