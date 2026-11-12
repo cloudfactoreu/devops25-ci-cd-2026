@@ -6,7 +6,6 @@ on:
       - demo/dag5
       - demo/dag6
 
-
   workflow_dispatch:
 
 jobs:
@@ -31,9 +30,11 @@ jobs:
         run: |
           for i in {1..10}; do
             if curl --fail --silent http://localhost:8000/health; then
+              echo
               echo "Deployment verified successfully"
               exit 0
             fi
+
             echo "Waiting for application..."
             sleep 2
           done
@@ -41,6 +42,24 @@ jobs:
           echo "Deployment verification failed"
           docker logs devops25-app
           exit 1
+
+      - name: Verify deployed version
+        run: |
+          set -o pipefail
+
+          echo "Checking deployed application version..."
+
+          curl --fail --silent --show-error \
+            http://localhost:8000/version
+
+          echo
+          echo "Checking expected version..."
+
+          curl --fail --silent --show-error \
+            http://localhost:8000/version | python3 -c \
+            'import json,sys; data=json.load(sys.stdin); assert data["version"] == "1.1", "Unexpected version"'
+
+          echo "Correct application version deployed"
 
       - name: Stop application
         if: always()
